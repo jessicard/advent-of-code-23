@@ -7,7 +7,7 @@ int is_num(char c);
 char * get_first_spelled_ptr(char *line);
 char * get_last_spelled_ptr(char *original);
 char parse_spelled(char *str);
-int starts_with_either_direction(char *haystack, char *needle);
+int starts_with(char *haystack, char *needle);
 char *strrev(char *str);
 
 int main(int argc, char *argv[]) {
@@ -185,25 +185,25 @@ char * get_last_spelled_ptr(char *original) {
 }
 
 char parse_spelled(char *str) {
-    if (starts_with_either_direction(str, "zero")) {
+    if (starts_with(str, "zero")) {
         return '0';
-    } else if (starts_with_either_direction(str, "one")) {
+    } else if (starts_with(str, "one")) {
         return '1';
-    } else if (starts_with_either_direction(str, "two")) {
+    } else if (starts_with(str, "two")) {
         return '2';
-    } else if (starts_with_either_direction(str, "three")) {
+    } else if (starts_with(str, "three")) {
         return '3';
-    } else if (starts_with_either_direction(str, "four")) {
+    } else if (starts_with(str, "four")) {
         return '4';
-    } else if (starts_with_either_direction(str, "five")) {
+    } else if (starts_with(str, "five")) {
         return '5';
-    } else if (starts_with_either_direction(str, "six")) {
+    } else if (starts_with(str, "six")) {
         return '6';
-    } else if (starts_with_either_direction(str, "seven")) {
+    } else if (starts_with(str, "seven")) {
         return '7';
-    } else if (starts_with_either_direction(str, "eight")) {
+    } else if (starts_with(str, "eight")) {
         return '8';
-    } else if (starts_with_either_direction(str, "nine")) {
+    } else if (starts_with(str, "nine")) {
         return '9';
     } else {
         fprintf(stderr, "Shouldn't have parsed\n");
@@ -211,17 +211,13 @@ char parse_spelled(char *str) {
     }
 }
 
-int starts_with_either_direction(char *haystack, char *needle) {
+int starts_with(char *haystack, char *needle) {
     if (!haystack) return 0;
 
     size_t len = strlen(needle);
     if (strlen(haystack) < len) return 0;
 
-    char rev_needle[6] = { 0 }; // longest number is "three", which is 5 chars + null
-    strncpy(rev_needle, needle, len);
-    strrev(rev_needle);
-
-    return strncmp(needle, haystack, len) == 0 || strncmp(rev_needle, haystack, len) == 0;
+    return strncmp(needle, haystack, len) == 0;
 }
 
 char *strrev(char *str) {
