@@ -6,7 +6,7 @@ int get_calibration_value(char * line);
 int is_num(char c);
 char * get_first_spelled_ptr(char *line);
 char * get_last_spelled_ptr(char *original);
-int parse_spelled(char *str);
+char parse_spelled(char *str);
 int starts_with_either_direction(char *haystack, char *needle);
 char *strrev(char *str);
 
@@ -71,23 +71,24 @@ int get_calibration_value(char * line) {
         curr_char_ptr--;
     }
 
-    // num[0] = *first_digit_ptr;
-    // num[1] = *last_digit_ptr;
-
     first_spelled_ptr = get_first_spelled_ptr(line);
-    last_spelled_ptr = get_last_spelled_ptr(line);
+    // last_spelled_ptr = get_last_spelled_ptr(line);
 
-    if (first_spelled_ptr < first_digit_ptr) {
+    if (first_spelled_ptr && first_spelled_ptr < first_digit_ptr) {
         num[0] = parse_spelled(first_spelled_ptr);
-    } else {
+    } else if (first_digit_ptr) {
         num[0] = *first_digit_ptr;
+    } else {
+        fprintf(stderr, "Both pointers null\n");
     }
 
-    if (last_spelled_ptr > last_digit_ptr) {
-        num[1] = parse_spelled(last_spelled_ptr);
-    } else {
+    // if (last_spelled_ptr && last_spelled_ptr > last_digit_ptr) {
+    //     num[1] = parse_spelled(last_spelled_ptr);
+    // } else if (last_digit_ptr) {
         num[1] = *last_digit_ptr;
-    }
+    // } else {
+    //     fprintf(stderr, "Both pointers null\n");
+    // }
 
     return atoi(num);
 }
@@ -100,9 +101,8 @@ char * get_first_spelled_ptr(char *line) {
     // abcone2threexyz
     //    ^
     // should return that pointer
+    char *lowest = NULL;
     char *ptrs[10];
-    char *lowest;
-
     ptrs[0] = strstr(line, "zero");
     ptrs[1] = strstr(line, "one");
     ptrs[2] = strstr(line, "two");
@@ -115,7 +115,7 @@ char * get_first_spelled_ptr(char *line) {
     ptrs[9] = strstr(line, "nine");
 
     for (int i = 0; i < 10; i++) {
-        if (ptrs[i] != NULL && ptrs[i] < lowest) {
+        if (ptrs[i] && (ptrs[i] < lowest || !lowest)) {
             lowest = ptrs[i];
         }
     }
@@ -128,9 +128,11 @@ char * get_last_spelled_ptr(char *original) {
     //        ^
     // should return that pointer
     char rev_line[1024] = { 0 }; // Assume max line length of 1024 characters
-    strncpy(rev_line, strrev(original), strlen(original));
+    strncpy(rev_line, original, strlen(original));
+    strrev(rev_line);
+
+    char *lowest = NULL;
     char *ptrs[10];
-    char *lowest;
 
     // initially will find this pointer:
     // zyxeerht2enocba
@@ -161,27 +163,27 @@ char * get_last_spelled_ptr(char *original) {
     return original + (strlen(original) - 1) - distance_from_end_of_original;
 }
 
-int parse_spelled(char *str) {
+char parse_spelled(char *str) {
     if (starts_with_either_direction(str, "zero")) {
-        return 0;
+        return '0';
     } else if (starts_with_either_direction(str, "one")) {
-        return 1;
+        return '1';
     } else if (starts_with_either_direction(str, "two")) {
-        return 2;
+        return '2';
     } else if (starts_with_either_direction(str, "three")) {
-        return 3;
+        return '3';
     } else if (starts_with_either_direction(str, "four")) {
-        return 4;
+        return '4';
     } else if (starts_with_either_direction(str, "five")) {
-        return 5;
+        return '5';
     } else if (starts_with_either_direction(str, "six")) {
-        return 6;
+        return '6';
     } else if (starts_with_either_direction(str, "seven")) {
-        return 7;
+        return '7';
     } else if (starts_with_either_direction(str, "eight")) {
-        return 8;
+        return '8';
     } else if (starts_with_either_direction(str, "nine")) {
-        return 9;
+        return '9';
     } else {
         fprintf(stderr, "Shouldn't have parsed\n");
         exit(1);
@@ -189,8 +191,16 @@ int parse_spelled(char *str) {
 }
 
 int starts_with_either_direction(char *haystack, char *needle) {
+    if (!haystack) return 0;
+
     size_t len = strlen(needle);
-    return strncmp(needle, haystack, len) || strncmp(strrev(needle), haystack, len);
+    if (strlen(haystack) < len) return 0;
+
+    char rev_needle[6] = { 0 }; // longest number is "three", which is 5 chars + null
+    strncpy(rev_needle, needle, len);
+    strrev(rev_needle);
+
+    return strncmp(needle, haystack, len) == 0 || strncmp(rev_needle, haystack, len) == 0;
 }
 
 char *strrev(char *str) {
