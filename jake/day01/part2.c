@@ -1,0 +1,207 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int get_calibration_value(char * line);
+int is_num(char c);
+char * get_first_spelled_ptr(char *line);
+char * get_last_spelled_ptr(char *original);
+int parse_spelled(char *str);
+int starts_with_either_direction(char *haystack, char *needle);
+char *strrev(char *str);
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+    }
+
+    // Open the file
+    FILE *file = fopen(argv[1], "r");
+    if (file == NULL) {
+        fprintf(stderr, "Error opening file\n");
+        return 1;
+    }
+
+    // Read the file line-by-line
+    char line[1024]; // Assume max line length of 1024 characters
+    int current = 0;
+    int total = 0;
+    while (fgets(line, sizeof(line), file)) {
+        // Assume last character is a newline
+        line[strlen(line) - 1] = 0;
+        current = get_calibration_value(line);
+        total += current;
+        printf("%s = %d\n", line, current);
+    }
+
+    fclose(file);
+    printf("total: %d\n", total);
+    return 0;
+}
+
+int get_calibration_value(char * line) {
+    char num[3] = { 0 };
+    char *first_digit_ptr = NULL;
+    char *last_digit_ptr = NULL;
+    char *first_spelled_ptr = NULL;
+    char *last_spelled_ptr = NULL;
+
+    char *curr_char_ptr = line;
+
+    // Get the location of the first digit.
+    while (*curr_char_ptr != 0) {
+        if (is_num(*curr_char_ptr)) {
+            first_digit_ptr = curr_char_ptr;
+            break;
+        }
+
+        curr_char_ptr++;
+    }
+
+    // Move to end of string.
+    curr_char_ptr = line + strlen(line) - 1;
+
+    // Get the location of the last digit.
+    while (curr_char_ptr >= line) {
+        if (is_num(*curr_char_ptr)) {
+            last_digit_ptr = curr_char_ptr;
+            break;
+        }
+
+        curr_char_ptr--;
+    }
+
+    // num[0] = *first_digit_ptr;
+    // num[1] = *last_digit_ptr;
+
+    first_spelled_ptr = get_first_spelled_ptr(line);
+    last_spelled_ptr = get_last_spelled_ptr(line);
+
+    if (first_spelled_ptr < first_digit_ptr) {
+        num[0] = parse_spelled(first_spelled_ptr);
+    } else {
+        num[0] = *first_digit_ptr;
+    }
+
+    if (last_spelled_ptr > last_digit_ptr) {
+        num[1] = parse_spelled(last_spelled_ptr);
+    } else {
+        num[1] = *last_digit_ptr;
+    }
+
+    return atoi(num);
+}
+
+int is_num(char c) {
+    return c >= '0' && c <= '9';
+}
+
+char * get_first_spelled_ptr(char *line) {
+    // abcone2threexyz
+    //    ^
+    // should return that pointer
+    char *ptrs[10];
+    char *lowest;
+
+    ptrs[0] = strstr(line, "zero");
+    ptrs[1] = strstr(line, "one");
+    ptrs[2] = strstr(line, "two");
+    ptrs[3] = strstr(line, "three");
+    ptrs[4] = strstr(line, "four");
+    ptrs[5] = strstr(line, "five");
+    ptrs[6] = strstr(line, "six");
+    ptrs[7] = strstr(line, "seven");
+    ptrs[8] = strstr(line, "eight");
+    ptrs[9] = strstr(line, "nine");
+
+    for (int i = 0; i < 10; i++) {
+        if (ptrs[i] != NULL && ptrs[i] < lowest) {
+            lowest = ptrs[i];
+        }
+    }
+
+    return lowest;
+}
+
+char * get_last_spelled_ptr(char *original) {
+    // abcone2threexyz
+    //        ^
+    // should return that pointer
+    char rev_line[1024] = { 0 }; // Assume max line length of 1024 characters
+    strncpy(rev_line, strrev(original), strlen(original));
+    char *ptrs[10];
+    char *lowest;
+
+    // initially will find this pointer:
+    // zyxeerht2enocba
+    //    ^
+    // We add offsets to push it up. In this case:
+    // zyxeerht2enocba
+    //        ^
+    ptrs[0] = strstr(rev_line, "orez") + 3;
+    ptrs[1] = strstr(rev_line, "eno") + 2;
+    ptrs[2] = strstr(rev_line, "owt") + 2;
+    ptrs[3] = strstr(rev_line, "eerht") + 4;
+    ptrs[4] = strstr(rev_line, "ruof") + 3;
+    ptrs[5] = strstr(rev_line, "evif") + 3;
+    ptrs[6] = strstr(rev_line, "xis") + 2;
+    ptrs[7] = strstr(rev_line, "neves") + 4;
+    ptrs[8] = strstr(rev_line, "thgie") + 4;
+    ptrs[9] = strstr(rev_line, "enin") + 3;
+
+    for (int i = 0; i < 10; i++) {
+        if (ptrs[i] != NULL && ptrs[i] < lowest) {
+            lowest = ptrs[i];
+        }
+    }
+
+    if (lowest == NULL) return lowest;
+
+    int distance_from_end_of_original = lowest - rev_line;
+    return original + (strlen(original) - 1) - distance_from_end_of_original;
+}
+
+int parse_spelled(char *str) {
+    if (starts_with_either_direction(str, "zero")) {
+        return 0;
+    } else if (starts_with_either_direction(str, "one")) {
+        return 1;
+    } else if (starts_with_either_direction(str, "two")) {
+        return 2;
+    } else if (starts_with_either_direction(str, "three")) {
+        return 3;
+    } else if (starts_with_either_direction(str, "four")) {
+        return 4;
+    } else if (starts_with_either_direction(str, "five")) {
+        return 5;
+    } else if (starts_with_either_direction(str, "six")) {
+        return 6;
+    } else if (starts_with_either_direction(str, "seven")) {
+        return 7;
+    } else if (starts_with_either_direction(str, "eight")) {
+        return 8;
+    } else if (starts_with_either_direction(str, "nine")) {
+        return 9;
+    } else {
+        fprintf(stderr, "Shouldn't have parsed\n");
+        exit(1);
+    }
+}
+
+int starts_with_either_direction(char *haystack, char *needle) {
+    size_t len = strlen(needle);
+    return strncmp(needle, haystack, len) || strncmp(strrev(needle), haystack, len);
+}
+
+char *strrev(char *str) {
+    if (!str || !*str) return str;
+    char *p1, *p2;
+
+    for (p1 = str, p2 = str + strlen(str) - 1; p2 > p1; ++p1, --p2) {
+        *p1 ^= *p2;
+        *p2 ^= *p1;
+        *p1 ^= *p2;
+    }
+
+    return str;
+}
