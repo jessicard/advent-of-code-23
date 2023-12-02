@@ -13,10 +13,10 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Read and print the contents of the file
-    char ch;
-    while ((ch = fgetc(file)) != EOF) {
-        putchar(ch);
+    // Read and print the contents of the file line-by-line
+    char line[1024]; // Assume max line length of 1024 characters
+    while (fgets(line, sizeof(line), file)) {
+        printf("%s", line);
     }
 
     fclose(file);
