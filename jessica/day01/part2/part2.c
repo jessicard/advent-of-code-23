@@ -21,6 +21,7 @@ int main(int argc, char **argv)
     char buf[1000] = { 0 };
     char ln[1000] = { 0 };
     int tot = 0;
+    int j = 0;
 
     while (fgets(buf, sizeof(buf), fp) != NULL)
     {
@@ -37,6 +38,7 @@ int main(int argc, char **argv)
                 sprintf(&num[strlen(num)], "%c", '1');
                 //fprintf(stderr, "%s", "\none\n");
                 memset(ln, 0, sizeof(ln));
+                sprintf(&ln[0], "%c", 'e');
                 continue;
             }
             if (strstr(ln, "two") != NULL)
@@ -44,6 +46,7 @@ int main(int argc, char **argv)
                 sprintf(&num[strlen(num)], "%c", '2');
                 // fprintf(stderr, "%s", "\ntwo\n");
                 memset(ln, 0, sizeof(ln));
+                sprintf(&ln[0], "%c", 'o');
                 continue;
             }
             if (strstr(ln, "three") != NULL)
@@ -51,6 +54,7 @@ int main(int argc, char **argv)
                 sprintf(&num[strlen(num)], "%c", '3');
                 // fprintf(stderr, "%s", "\nthree\n");
                 memset(ln, 0, sizeof(ln));
+                sprintf(&ln[0], "%c", 'e');
                 continue;
             }
             if (strstr(ln, "four") != NULL)
@@ -58,6 +62,7 @@ int main(int argc, char **argv)
                 sprintf(&num[strlen(num)], "%c", '4');
                 // fprintf(stderr, "%s", "\nfour\n");
                 memset(ln, 0, sizeof(ln));
+                sprintf(&ln[0], "%c", 'r');
                 continue;
             }
             if (strstr(ln, "five") != NULL)
@@ -65,6 +70,7 @@ int main(int argc, char **argv)
                 sprintf(&num[strlen(num)], "%c", '5');
                 // fprintf(stderr, "%s", "\nfive\n");
                 memset(ln, 0, sizeof(ln));
+                sprintf(&ln[0], "%c", 'e');
                 continue;
             }
             if (strstr(ln, "six") != NULL)
@@ -72,6 +78,7 @@ int main(int argc, char **argv)
                 sprintf(&num[strlen(num)], "%c", '6');
                 // fprintf(stderr, "%s", "\nsix\n");
                 memset(ln, 0, sizeof(ln));
+                sprintf(&ln[0], "%c", 'x');
                 continue;
             }
             if (strstr(ln, "seven") != NULL)
@@ -79,6 +86,7 @@ int main(int argc, char **argv)
                 sprintf(&num[strlen(num)], "%c", '7');
                 // fprintf(stderr, "%s", "\nseven\n");
                 memset(ln, 0, sizeof(ln));
+                sprintf(&ln[0], "%c", 'n');
                 continue;
             }
             if (strstr(ln, "eight") != NULL)
@@ -86,6 +94,7 @@ int main(int argc, char **argv)
                 sprintf(&num[strlen(num)], "%c", '8');
                 // fprintf(stderr, "%s", "\neight\n");
                 memset(ln, 0, sizeof(ln));
+                sprintf(&ln[0], "%c", 't');
                 continue;
             }
             if (strstr(ln, "nine") != NULL)
@@ -93,6 +102,7 @@ int main(int argc, char **argv)
                 sprintf(&num[strlen(num)], "%c", '9');
                 // fprintf(stderr, "%s", "\nnine\n");
                 memset(ln, 0, sizeof(ln));
+                sprintf(&ln[0], "%c", 'e');
                 continue;
             }
 
@@ -110,9 +120,11 @@ int main(int argc, char **argv)
         num[1] = num[strlen(num) - 1];
         num[2] = '\0';
 
-        fprintf(stderr, "%d\n", j);
+        fprintf(stderr, "%.4d: %s, ", j + 1, num);
 
         tot += atoi(num);
+        fprintf(stderr, "%d\n", tot);
+        j++;
     }
 
     fprintf(stderr, "%d", tot);
