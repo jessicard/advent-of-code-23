@@ -22,10 +22,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Read the file line-by-line
-    char line[1024]; // Assume max line length of 1024 characters
     int current = 0;
     int total = 0;
+
+    // Read the file line-by-line
+    char line[1024]; // Assume max line length of 1024 characters
     while (fgets(line, sizeof(line), file)) {
         // Assume last character is a newline
         line[strlen(line) - 1] = 0;
