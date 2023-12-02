@@ -8,12 +8,12 @@ CC = gcc
 
 CFLAGS = -g -Wall -Wpedantic -std=c17
 
-prog: prog.o
+part2: part2.o
 
 # Remove build artifacts
 .PHONY: clean
 clean:
-	rm -f *.o a.out prog
+	rm -f *.o a.out part2
 
 .PHONY: all
-all: clean prog
+all: clean part2
