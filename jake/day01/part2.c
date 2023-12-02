@@ -71,11 +71,8 @@ int get_calibration_value(char * line) {
         curr_char_ptr--;
     }
 
-    // printf("starting on '%s'\n", line);
     first_spelled_ptr = get_first_spelled_ptr(line);
-    // printf("first_spelled_ptr = '%s'\n", first_spelled_ptr ? first_spelled_ptr : "NONE");
     last_spelled_ptr = get_last_spelled_ptr(line);
-    // printf("last_spelled_ptr = '%s'\n", last_spelled_ptr ? last_spelled_ptr : "NONE");
 
     if (first_spelled_ptr && first_spelled_ptr < first_digit_ptr) {
         num[0] = parse_spelled(first_spelled_ptr);
@@ -135,7 +132,6 @@ char * get_last_spelled_ptr(char *original) {
     strncpy(rev_line, original, len);
     strrev(rev_line);
 
-    // printf("reversed = '%s'\n", rev_line);
     char *lowest = NULL;
     char *ptrs[10];
 
@@ -167,13 +163,10 @@ char * get_last_spelled_ptr(char *original) {
     if (ptrs[9]) ptrs[9] += 3;
 
     for (int i = 0; i < 10; i++) {
-        // printf("contains %d at '%s'\n", i, )
         if (ptrs[i] != NULL && (ptrs[i] < lowest || !lowest)) {
             lowest = ptrs[i];
         }
     }
-
-    // printf("final lowest: '%s'\n", lowest ? lowest : "NONE");
 
     if (!lowest) return NULL;
     // zyxeerht2enocba
@@ -181,8 +174,6 @@ char * get_last_spelled_ptr(char *original) {
     // ^
     // = 7
     int distance_from_end_of_original = lowest - rev_line;
-    // printf("distance from end: %d\n", distance_from_end_of_original);
-
 
     //              abcone2threexyz
     // original:    ^
@@ -190,8 +181,6 @@ char * get_last_spelled_ptr(char *original) {
     // + (len - 1):               ^
     //              abcone2threexyz
     // - 7:                ^
-    // printf("original: %lu\n", original);
-    // printf("last    : %lu\n", original + (len - 1) - distance_from_end_of_original);
     return original + (len - 1) - distance_from_end_of_original;
 }
 
@@ -231,8 +220,6 @@ int starts_with_either_direction(char *haystack, char *needle) {
     char rev_needle[6] = { 0 }; // longest number is "three", which is 5 chars + null
     strncpy(rev_needle, needle, len);
     strrev(rev_needle);
-
-    // printf("checking '%s' for '%s' or '%s'\n", haystack, needle, rev_needle);
 
     return strncmp(needle, haystack, len) == 0 || strncmp(rev_needle, haystack, len) == 0;
 }
