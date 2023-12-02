@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.meta": "yaml",
+        "*.asset": "yaml",
+        "stdlib.h": "c"
+    }
+}
