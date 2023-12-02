@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     }
 
     char buf[1000] = { 0 };
-    char nums[1000] = { 0 };
+    int tot = 0;
 
     while (fgets(buf, sizeof(buf), fp) != NULL)
     {
@@ -31,17 +31,14 @@ int main(int argc, char **argv)
                 sprintf(&num[strlen(num)], "%c", buf[i]);
             }
         }
-        fprintf(stderr, "%s\n", num);
-        // sprintf(&nums[strlen(nums)], "%d%d", atoi(&num[0]), atoi(&num[strlen(num) - 1]));
+        num[1] = num[strlen(num) - 1];
+        num[2] = '\0';
+
+        tot += atoi(num);
     }
 
-    int tot = 0;
-    for (int i = 0; i < strlen(nums); i++)
-    {
-        tot += atoi(&nums[i]);
-    }
 
-    // fprintf(stderr, "%d", tot);
+    fprintf(stderr, "%d", tot);
 
     return 0;
 }
