@@ -13,9 +13,11 @@ total = 0
 
 lines.each do |line|
   match = /^Game (\d+): (.*)$/.match(line)
+
   game_id = match.captures.first
   reveals = match.captures.last.split("; ").map do |reveal|
     counts = { "red" => 0, "green" => 0, "blue" => 0 }
+
     reveal.split(", ").each do |count|
       amount, color = count.split(" ")
       counts[color] += amount.to_i
@@ -26,11 +28,9 @@ lines.each do |line|
 
   possible = reveals.all? { |r| r.all? { |(color, count)| max_counts[color] >= count }}
 
-  puts "#{line.strip} - #{possible}"
+  puts "#{possible ? '✅' : '❌'} #{line.strip}"
 
-  if possible
-    total += game_id.to_i
-  end
+  total += game_id.to_i if possible
 end
 
 puts "Total: #{total}"
