@@ -1,7 +1,4 @@
 lines = File.readlines(ARGV.first)
-total = lines.size
-
-puts "Lines: #{total}"
 
 max_counts = {
   "red" => 12,
