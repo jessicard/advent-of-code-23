@@ -1,5 +1,9 @@
 def symbol?(char)
-  !(".0123456789".include?(char))
+  !num?(char) && char != "."
+end
+
+def num?(char)
+  "0123456789".include? char
 end
 
 lines = File.readlines(ARGV.first)
@@ -7,55 +11,53 @@ total = 0
 
 lines.size.times do |row|
   line = lines[row]
+  in_num = false
+  current_num = ""
+  nums_with_start_index = []
+  start_index = -1
 
-  line.scan(/\d+/).each do |num|
-    # Get the full match data, not just the string
-    match_data = Regexp.last_match
-    # num = match_data.to_s
-    puts "matched #{num}"
-
-    # Get the index 1 character before the match started.
-    # Use max to avoid going negative.
-    puts "last match: #{match_data.inspect}"
-    left_index = [match_data.offset(0)[0] - 1, 0].max
-
-    puts "left_index = #{left_index}"
-
-    # Get the index 1 character after the match ended.
-    # Use min to avoid going past the end of the array.
-    right_index = [left_index + num.size, line.size - 1].min
-
-    puts "right_index = #{right_index}"
-
-    is_part_num = false
-
-    if symbol?(line[left_index])
-      # There's a symbol on the left
-      puts "found symbol on left"
-      is_part_num = true
-    elsif symbol?(line[right_index])
-      # There's a symbol on the right
-      puts "found symbol on right"
-      is_part_num = true
-    else
-      # Check if there are any symbols above or below any characters
-      left_index.upto(right_index) do |col|
-        if row > 0 && symbol?(lines[row - 1][col])
-          # There's a symbol above this character.
-          puts "found symbol above"
-          is_part_num = true
-          break
-        elsif (row + 1) < lines.size && symbol?(lines[row + 1][col])
-          # There's a symbol below this character.
-          puts "found symbol below"
-          is_part_num = true
-          break
-        end
+  line.each_char.with_index do |char, i|
+    if in_num
+      # We're already inside a number, see if it's continuing or ending.
+      if num?(char)
+        # It's continuing, so concatenate.
+        current_num << char
+      else
+        # It's ending, so add it to the list of numbers.
+        in_num = false
+        nums_with_start_index << [current_num, start_index]
+        current_num = ""
       end
+    elsif num?(char)
+      # We weren't inside a number, but a new one is starting!
+      in_num = true
+      current_num << char
+      start_index = i
+    end
+  end
+
+  nums_with_start_index.each do |(num, start_index)|
+    # Get the index 1 character before the start of the number.
+    # Use max to avoid going negative.
+    left_index = [start_index - 1, 0].max
+
+    # Get the index 1 character after the end of the number.
+    # Use min to avoid going past the end of the array.
+    right_index = [start_index + num.size, line.size - 1].min
+
+    # Iterate through all adjacent characters and see if any of them are symbols.
+    is_part_num = (left_index..right_index).any? do |col|
+      # There's a symbol above this character.
+      (row > 0 && symbol?(lines[row - 1][col])) ||
+
+      # There's a symbol below this character.
+      ((row + 1) < lines.size && symbol?(lines[row + 1][col])) ||
+
+      # This character itself is a symbol (handles the left/right edges).
+      symbol?(lines[row][col])
     end
 
-    puts
-
+    # If any are symbols, add the number to the total.
     total += num.to_i if is_part_num
   end
 end
